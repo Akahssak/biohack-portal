@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Workspace — BioHack 2026</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b141a">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2300a884'/%3E%3Ctext x='50' y='70' font-size='58' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%23041d17'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="workspace-body">
+
+<!-- Loading gate, shown until auth resolves -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="spinner"></div>
+    <p>Verifying your session…</p>
+  </div>
+</div>
+
+<!-- Shown when nobody is signed in -->
+<div class="gate hidden" id="gate-denied">
+  <div class="gate-box">
+    <i class="fa-solid fa-lock"></i>
+    <h2>Sign-in required</h2>
+    <p>This workspace is available to registered teams only. Sign in with the credentials you created during registration.</p>
+    <a class="btn btn-primary" href="index.html#register">
+      <i class="fa-solid fa-arrow-left"></i>Back to the portal
+    </a>
+  </div>
+</div>
+
+<!-- =========================== WORKSPACE =========================== -->
+<div class="workspace hidden" id="workspace">
+
+  <!-- Sidebar -->
+  <aside class="ws-sidebar">
+    <div class="ws-sidebar-head">
+      <div class="ws-me">
+        <div class="avatar" id="me-avatar">?</div>
+        <div>
+          <div class="ws-me-name" id="me-name">—</div>
+          <div class="ws-me-role" id="me-role">Participant</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="sign-out" title="Sign out" aria-label="Sign out">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+
+    <div class="ws-sidebar-section">Conversations</div>
+
+    <nav class="ws-rooms" id="room-list" aria-label="Conversations"></nav>
+
+    <div class="ws-sidebar-foot">
+      <button class="btn btn-primary btn-block btn-sm" id="open-idea">
+        <i class="fa-solid fa-lightbulb"></i><span id="idea-btn-label">Submit idea brief</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Conversation -->
+  <section class="ws-main">
+    <header class="ws-main-head">
+      <button class="icon-btn ws-back" id="back-to-rooms" aria-label="Back to conversations">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <div class="room-icon" id="room-avatar"><i class="fa-solid fa-bullhorn"></i></div>
+      <div style="min-width:0">
+        <div class="ws-main-title" id="room-title">Announcements</div>
+        <div class="ws-main-desc" id="room-desc">Official updates from the organising committee</div>
+      </div>
+    </header>
+
+    <div class="ws-thread" id="thread" aria-live="polite"></div>
+
+    <form class="composer" id="composer">
+      <textarea id="composer-input" rows="1" placeholder="Type a message" maxlength="4000"
+                aria-label="Message"></textarea>
+      <button class="send-btn" type="submit" id="composer-send" aria-label="Send">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+
+    <div class="composer hidden" id="composer-locked">
+      <div class="composer-locked">
+        <i class="fa-solid fa-bullhorn"></i>
+        Only the organising committee can post here. Use your committee desk to reply.
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ========================= IDEA SUBMISSION ========================= -->
+<div class="modal hidden" id="idea-modal" role="dialog" aria-modal="true" aria-labelledby="idea-modal-title">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 class="card-title" id="idea-modal-title">Idea brief</h3>
+        <p class="card-sub">Reviewed on a rolling basis — you can revise it until screening closes.</p>
+      </div>
+      <button class="modal-close" id="idea-close" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form id="idea-form" novalidate>
+      <div class="field">
+        <label for="idea-title">Project title</label>
+        <input class="input" type="text" id="idea-title" required maxlength="120"
+               placeholder="Interpretable variant risk scoring for rare disease panels">
+      </div>
+
+      <div class="field">
+        <label for="idea-track">Track</label>
+        <select class="select" id="idea-track">
+          <option value="Genomic AI &amp; Big Data">1 — Genomic AI &amp; Big Data</option>
+          <option value="Synthetic Biology &amp; CRISPR">2 — Synthetic Biology &amp; CRISPR</option>
+          <option value="Target Drug Screening">3 — Target Drug Screening</option>
+          <option value="Sustainable Biomanufacturing">4 — Sustainable Biomanufacturing</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="idea-problem">Problem statement</label>
+        <textarea class="textarea" id="idea-problem" required maxlength="1200"
+                  placeholder="What gap are you closing, and who does it affect?"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="idea-approach">Proposed approach</label>
+        <textarea class="textarea" id="idea-approach" required maxlength="1500"
+                  placeholder="Your method, model or assay — enough detail for a reviewer to judge."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="idea-data">Data &amp; tooling</label>
+        <textarea class="textarea" id="idea-data" required maxlength="800" style="min-height:80px"
+                  placeholder="Datasets, libraries and instruments you will rely on."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="idea-impact">Expected outcome &amp; impact</label>
+        <textarea class="textarea" id="idea-impact" required maxlength="1000" style="min-height:80px"
+                  placeholder="What will be working by the end of the build window, and why it matters."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="idea-repo">Repository link <span style="color:var(--text-faint)">(optional)</span></label>
+        <input class="input" type="url" id="idea-repo" placeholder="https://github.com/your-team/project">
+      </div>
+
+      <button class="btn btn-primary btn-block" type="submit" id="idea-submit">
+        <i class="fa-solid fa-paper-plane"></i>Submit brief
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+<script src="js/firebase-config.js"></script>
+<script type="module" src="js/workspace.js"></script>
+</body>
+</html>
